@@ -40,7 +40,7 @@ public class Prompt
     
     public Prompt(String title, String noguiMessage)
     {
-        this(title, noguiMessage, "true".equalsIgnoreCase(System.getProperty("nogui")), "true".equalsIgnoreCase(System.getProperty("noprompt")));
+        this(title, noguiMessage, "true".equalsIgnoreCase(System.getenv("JMUSICBOT_NOGUI")), "true".equalsIgnoreCase(System.getenv("JMUSICBOT_NOPROMPT")));
     }
     
     public Prompt(String title, String noguiMessage, boolean nogui, boolean noprompt)

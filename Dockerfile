@@ -27,9 +27,13 @@ ENV DISCORD_TOKEN ""
 
 ENV DISCORD_BOT_OWNER ""
 
+ENV JMUSICBOT_NOGUI "true"
+
+ENV JMUSICBOT_NOPROMPT "true"
+
 # Entrypoint of JMusicBot
 WORKDIR /JMusicBot
-CMD [ "/usr/bin/java", "-Dnogui=true", "-jar", "/JMusicBot/JMusicBot.jar" ]
+CMD [ "/usr/bin/java", "-jar", "/JMusicBot/JMusicBot.jar" ]
 
 # docker build . -t java-discord-music-bot
 # docker run -d \
