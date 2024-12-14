@@ -6,3 +6,4 @@
 nb*.xml
 .idea
 .DS_Store
+.env
