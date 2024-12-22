@@ -23,6 +23,8 @@ import com.typesafe.config.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
+
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 
@@ -88,7 +90,7 @@ public class BotConfig
             songInGame = config.getBoolean("songinstatus");
             npImages = config.getBoolean("npimages");
             updatealerts = config.getBoolean("updatealerts");
-            logLevel = config.getString("loglevel");
+            logLevel = Optional.ofNullable(System.getenv("LOGLEVEL")).orElse(config.getString("loglevel"));
             useEval = config.getBoolean("eval");
             evalEngine = config.getString("evalengine");
             maxSeconds = config.getLong("maxtime");

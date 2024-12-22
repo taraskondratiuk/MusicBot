@@ -17,6 +17,7 @@ package com.jagrosh.jmusicbot.audio;
 
 import com.dunctebot.sourcemanagers.DuncteBotSources;
 import com.jagrosh.jmusicbot.Bot;
+import com.jagrosh.jmusicbot.audio.kolhoz.YtDlpAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.container.MediaContainerRegistry;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -29,7 +30,7 @@ import com.sedmelluq.discord.lavaplayer.source.nico.NicoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.skeleton.NoUnplayableTracksYoutubeAudioSourceManager;
 import net.dv8tion.jda.api.entities.Guild;
 
 /**
@@ -49,7 +50,7 @@ public class PlayerManager extends DefaultAudioPlayerManager
     {
         TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms()).forEach(t -> registerSourceManager(t));
 
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true, true, true);
+        NoUnplayableTracksYoutubeAudioSourceManager yt = new NoUnplayableTracksYoutubeAudioSourceManager(true, true, true);
         yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
         registerSourceManager(yt);
 
@@ -60,6 +61,7 @@ public class PlayerManager extends DefaultAudioPlayerManager
         registerSourceManager(new BeamAudioSourceManager());
         registerSourceManager(new GetyarnAudioSourceManager());
         registerSourceManager(new NicoAudioSourceManager());
+        registerSourceManager(new YtDlpAudioSourceManager());
         registerSourceManager(new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY));
 
         AudioSourceManagers.registerLocalSource(this);
