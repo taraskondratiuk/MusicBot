@@ -31,13 +31,21 @@ RUN apt-get install python3-pip -y
 RUN python3 -m pip install -U yt-dlp --break-system-packages
 RUN apt-get install ffmpeg -y
 
+RUN apt-get install curl -y
+RUN curl -fsS https://dl.brave.com/install.sh | sh
+
 RUN mkdir "/cookies"
 RUN chmod 777 "/cookies"
-ADD cookies.txt /cookies/cookies.txt
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y cron
+RUN (crontab -l; echo "0 0 * * * python3 -m pip install -U yt-dlp --break-system-packages") | crontab -
 
 ENV YT_COOKIES_FILE_PATH "/cookies/cookies.txt"
+ENV BRAVE_BINARY "/usr/bin/brave-browser"
 ENV DISCORD_TOKEN ""
 ENV DISCORD_BOT_OWNER ""
+ENV YT_LOGIN ""
+ENV YT_PASSWORD ""
 ENV JMUSICBOT_NOGUI "true"
 ENV JMUSICBOT_NOPROMPT "true"
 ENV TRACKS_DIR "/tmp"
@@ -46,10 +54,12 @@ ENV TRACKS_DIR "/tmp"
 WORKDIR /JMusicBot
 CMD [ "/usr/bin/java", "-jar", "/JMusicBot/JMusicBot.jar" ]
 
-# docker build . -t java-discord-music-bot (cookies.txt file with yt cookies need to be in this dir)
+# docker build . -t java-discord-music-bot
 # docker run -d \
 #  --restart=unless-stopped \
 #  -e DISCORD_TOKEN=$DISCORD_TOKEN \
 #  -e DISCORD_BOT_OWNER=$DISCORD_BOT_OWNER \
-#  --name java-discrod-music-bot \
+#  -e YT_LOGIN=$YT_LOGIN \
+#  -e YT_PASSWORD=$YT_PASSWORD \
+#  --name java-discord-music-bot \
 #  java-discord-music-bot

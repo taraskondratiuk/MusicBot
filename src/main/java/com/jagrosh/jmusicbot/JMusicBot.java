@@ -24,12 +24,17 @@ import com.jagrosh.jmusicbot.commands.dj.*;
 import com.jagrosh.jmusicbot.commands.general.*;
 import com.jagrosh.jmusicbot.commands.music.*;
 import com.jagrosh.jmusicbot.commands.owner.*;
+import com.jagrosh.jmusicbot.cookiesrefresh.CookiesRefresher;
 import com.jagrosh.jmusicbot.entities.Prompt;
 import com.jagrosh.jmusicbot.gui.GUI;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
 import java.awt.Color;
 import java.util.Arrays;
+import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.security.auth.login.LoginException;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.Activity;
@@ -65,6 +70,15 @@ public class JMusicBot
                     return;
                 default:
             }
+        var c = new CookiesRefresher(
+                true,
+                Optional.of(System.getenv("BRAVE_BINARY")).get(),
+                Optional.of(System.getenv("YT_LOGIN")).get(),
+                Optional.of(System.getenv("YT_PASSWORD")).get(),
+                Optional.of(System.getenv("YT_COOKIES_FILE_PATH")).get()
+        );
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+        scheduler.scheduleAtFixedRate(c::overwriteYtCookies, 0, 25, TimeUnit.HOURS);
         startBot();
     }
     
