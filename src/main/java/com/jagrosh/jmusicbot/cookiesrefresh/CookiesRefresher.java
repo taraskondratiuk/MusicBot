@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,8 @@ public class CookiesRefresher {
         chromeOptions.addArguments("--incognito", "--disable-web-security", "--disable-dev-shm-usage", "--no-sandbox",
                 "--remote-allow-origins=*", "--allow-running-insecure-content", "--window-size=1920,1080");
 
-        var driver = new ChromeDriver(chromeOptions);
+        var svc = new ChromeDriverService.Builder().withTimeout(Duration.ofSeconds(120)).build();
+        var driver = new ChromeDriver(svc, chromeOptions);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
 
         driver.get("https://www.youtube.com");

@@ -77,8 +77,8 @@ public class JMusicBot
                 Optional.of(System.getenv("YT_PASSWORD")).get(),
                 Optional.of(System.getenv("YT_COOKIES_FILE_PATH")).get()
         );
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
-        scheduler.scheduleAtFixedRate(c::overwriteYtCookies, 0, 25, TimeUnit.HOURS);
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(c::overwriteYtCookies, 0, 7, TimeUnit.HOURS);
         startBot();
     }
     
