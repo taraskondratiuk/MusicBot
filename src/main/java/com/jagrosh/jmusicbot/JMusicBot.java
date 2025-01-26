@@ -75,10 +75,11 @@ public class JMusicBot
                 Optional.of(System.getenv("FIREFOX_BINARY")).get(),
                 Optional.of(System.getenv("YT_LOGIN")).get(),
                 Optional.of(System.getenv("YT_PASSWORD")).get(),
-                Optional.of(System.getenv("YT_COOKIES_FILE_PATH")).get()
+                Optional.of(System.getenv("YT_COOKIES_FILE_PATH")).get(),
+                Optional.of(System.getenv("TIMEOUT_MULTIPLIER")).map(Integer::parseInt).orElse(1)
         );
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(c::overwriteYtCookies, 0, 7, TimeUnit.HOURS);
+        scheduler.scheduleAtFixedRate(c::overwriteYtCookies, 0, 27, TimeUnit.HOURS);
         startBot();
     }
     

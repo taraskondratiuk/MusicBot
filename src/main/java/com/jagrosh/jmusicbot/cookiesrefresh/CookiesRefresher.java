@@ -20,13 +20,15 @@ public class CookiesRefresher {
     String ytLogin;
     String ytPassword;
     String cookiesPath;
+    int timeoutMultiplier;
 
-    public CookiesRefresher(boolean headless, String browserBinaryPath, String ytLogin, String ytPassword, String cookiesPath) {
+    public CookiesRefresher(boolean headless, String browserBinaryPath, String ytLogin, String ytPassword, String cookiesPath, int timeoutMultiplier) {
         this.headless = headless;
         this.browserBinaryPath = browserBinaryPath;
         this.ytLogin = ytLogin;
         this.ytPassword = ytPassword;
         this.cookiesPath = cookiesPath;
+        this.timeoutMultiplier = timeoutMultiplier;
     }
 
     public final static Logger LOG = LoggerFactory.getLogger(CookiesRefresher.class);
@@ -45,9 +47,9 @@ public class CookiesRefresher {
     }
 
     private WebElement waitForEl(WebDriver driver, By by) throws InterruptedException {
-        new WebDriverWait(driver, Duration.ofSeconds(30))
+        new WebDriverWait(driver, Duration.ofSeconds(90))
                 .until(v -> v.findElement(by));
-        Thread.sleep(10 * 1000);
+        Thread.sleep(timeoutMultiplier * 10 * 1000);
         return driver.findElement(by);
     }
 
@@ -73,7 +75,7 @@ public class CookiesRefresher {
         waitForEl(driver, By.cssSelector("input[type=password]")).sendKeys(ytPassword);
         waitForEl(driver, By.cssSelector("input[type=password]")).sendKeys(Keys.RETURN);
 
-        Thread.sleep(20 * 1000);
+        Thread.sleep(timeoutMultiplier * 20 * 1000);
 
         var newCookies = driver.manage().getCookies();
 
