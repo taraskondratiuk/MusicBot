@@ -1,13 +1,10 @@
 package com.jagrosh.jmusicbot.cookiesrefresh;
 
-import com.jagrosh.jmusicbot.audio.kolhoz.YtDlpAudioSourceManager;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Cookie;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.*;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,30 +44,36 @@ public class CookiesRefresher {
         LOG.info("finish overwriting yt cookies");
     }
 
-    Set<Cookie> getNewCookies() {
-        WebDriverManager.chromedriver().setup();
-        var chromeOptions = new ChromeOptions();
+    private WebElement waitForEl(WebDriver driver, By by) throws InterruptedException {
+        new WebDriverWait(driver, Duration.ofSeconds(30))
+                .until(v -> v.findElement(by));
+        Thread.sleep(10 * 1000);
+        return driver.findElement(by);
+    }
 
-        chromeOptions.setBinary(browserBinaryPath);
+    Set<Cookie> getNewCookies() throws InterruptedException {
+        WebDriverManager.firefoxdriver().setup();
+        var firefoxOptions = new FirefoxOptions();
+
+        firefoxOptions.setBinary(browserBinaryPath);
         if (headless) {
-            chromeOptions.addArguments("--headless");
+            firefoxOptions.addArguments("-headless");
         }
-        chromeOptions.addArguments("--incognito", "--disable-web-security", "--disable-dev-shm-usage", "--no-sandbox",
-                "--remote-allow-origins=*", "--allow-running-insecure-content", "--window-size=1920,1080");
+        firefoxOptions.addArguments("-private", "-width=1920", "-height=1080");
 
-        var svc = new ChromeDriverService.Builder().withTimeout(Duration.ofSeconds(120)).build();
-        var driver = new ChromeDriver(svc, chromeOptions);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(60));
+        var driver = new FirefoxDriver(firefoxOptions);
 
         driver.get("https://www.youtube.com");
 
-        driver.findElement(By.cssSelector("a[aria-label=\"Sign in\"]")).click();
+        waitForEl(driver, By.cssSelector("a[aria-label=\"Sign in\"]")).click();
 
-        driver.findElement(By.cssSelector("input[type=email]")).sendKeys(ytLogin);
-        driver.findElement(By.cssSelector("input[type=email]")).sendKeys(Keys.RETURN);
+        waitForEl(driver, By.cssSelector("input[type=email]")).sendKeys(ytLogin);
+        waitForEl(driver, By.cssSelector("input[type=email]")).sendKeys(Keys.RETURN);
 
-        driver.findElement(By.cssSelector("input[type=password]")).sendKeys(ytPassword);
-        driver.findElement(By.cssSelector("input[type=password]")).sendKeys(Keys.RETURN);
+        waitForEl(driver, By.cssSelector("input[type=password]")).sendKeys(ytPassword);
+        waitForEl(driver, By.cssSelector("input[type=password]")).sendKeys(Keys.RETURN);
+
+        Thread.sleep(20 * 1000);
 
         var newCookies = driver.manage().getCookies();
 
