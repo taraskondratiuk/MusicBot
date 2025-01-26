@@ -4,6 +4,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,11 @@ public class CookiesRefresher {
     int timeoutMultiplier;
 
     public CookiesRefresher(boolean headless, String browserBinaryPath, String ytLogin, String ytPassword, String cookiesPath, int timeoutMultiplier) {
+        if (browserBinaryPath.isBlank()) throw new IllegalArgumentException("browserBinaryPath cannot be blank");
+        if (ytLogin.isBlank()) throw new IllegalArgumentException("ytLogin cannot be blank");
+        if (ytPassword.isBlank()) throw new IllegalArgumentException("ytPassword cannot be blank");
+        if (cookiesPath.isBlank()) throw new IllegalArgumentException("cookiesPath cannot be blank");
+
         this.headless = headless;
         this.browserBinaryPath = browserBinaryPath;
         this.ytLogin = ytLogin;
@@ -46,13 +52,6 @@ public class CookiesRefresher {
         LOG.info("finish overwriting yt cookies");
     }
 
-    private WebElement waitForEl(WebDriver driver, By by) throws InterruptedException {
-        new WebDriverWait(driver, Duration.ofSeconds(90))
-                .until(v -> v.findElement(by));
-        Thread.sleep(timeoutMultiplier * 10 * 1000);
-        return driver.findElement(by);
-    }
-
     Set<Cookie> getNewCookies() throws InterruptedException {
         WebDriverManager.firefoxdriver().setup();
         var firefoxOptions = new FirefoxOptions();
@@ -67,19 +66,29 @@ public class CookiesRefresher {
 
         driver.get("https://www.youtube.com");
 
-        waitForEl(driver, By.cssSelector("a[aria-label=\"Sign in\"]")).click();
+        new WebDriverWait(driver, Duration.ofSeconds(90 * timeoutMultiplier))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector("a[aria-label=\"Sign in\"]"))).click();
+        LOG.info("sing in btn pressed");
 
-        waitForEl(driver, By.cssSelector("input[type=email]")).sendKeys(ytLogin);
-        waitForEl(driver, By.cssSelector("input[type=email]")).sendKeys(Keys.RETURN);
+        var loginEl = new WebDriverWait(driver, Duration.ofSeconds(90 * timeoutMultiplier))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector("input[type=email]")));
+        LOG.info("login field loaded");
+        loginEl.sendKeys(ytLogin);
+        loginEl.sendKeys(Keys.RETURN);
 
-        waitForEl(driver, By.cssSelector("input[type=password]")).sendKeys(ytPassword);
-        waitForEl(driver, By.cssSelector("input[type=password]")).sendKeys(Keys.RETURN);
+
+        var pwEl = new WebDriverWait(driver, Duration.ofSeconds(90 * timeoutMultiplier))
+                .until(ExpectedConditions.elementToBeClickable(By.cssSelector("input[type=password]")));
+        LOG.info("pw field loaded");
+        pwEl.sendKeys(ytPassword);
+        pwEl.sendKeys(Keys.RETURN);
 
         Thread.sleep(timeoutMultiplier * 20 * 1000);
 
         var newCookies = driver.manage().getCookies();
 
         driver.quit();
+        LOG.info("cookies retrieved: " + newCookies.stream().map(Cookie::toString).reduce("", (a, b) -> a + "\n" + b));
 
         return newCookies;
     }
