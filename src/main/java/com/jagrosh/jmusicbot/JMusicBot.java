@@ -72,7 +72,7 @@ public class JMusicBot
             }
         var c = new CookiesRefresher(
                 true,
-                Optional.of(System.getenv("BRAVE_BINARY")).get(),
+                Optional.of(System.getenv("FIREFOX_BINARY")).get(),
                 Optional.of(System.getenv("YT_LOGIN")).get(),
                 Optional.of(System.getenv("YT_PASSWORD")).get(),
                 Optional.of(System.getenv("YT_COOKIES_FILE_PATH")).get(),

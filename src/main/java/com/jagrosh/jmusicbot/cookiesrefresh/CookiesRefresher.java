@@ -3,8 +3,8 @@ package com.jagrosh.jmusicbot.cookiesrefresh;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -88,16 +88,16 @@ public class CookiesRefresher {
     }
 
     private @NotNull RemoteWebDriver getRemoteWebDriver() {
-        var chromeOptions = new ChromeOptions();
+        WebDriverManager.firefoxdriver().setup();
+        var firefoxOptions = new FirefoxOptions();
 
-        chromeOptions.setBinary(browserBinaryPath);
+        firefoxOptions.setBinary(browserBinaryPath);
         if (headless) {
-            chromeOptions.addArguments("-headless");
+            firefoxOptions.addArguments("-headless");
         }
-        chromeOptions.addArguments("--incognito", "--disable-web-security", "--disable-dev-shm-usage", "--no-sandbox",
-                "--remote-allow-origins=*", "--allow-running-insecure-content", "--window-size=1920,1080");
+        firefoxOptions.addArguments("-private", "-width=1920", "-height=1080");
 
-        return new ChromeDriver(chromeOptions);
+        return new FirefoxDriver(firefoxOptions);
     }
 
     String generateCookiesString(Set<Cookie> cookies) {
