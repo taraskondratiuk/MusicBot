@@ -1,9 +1,11 @@
 package com.jagrosh.jmusicbot.cookiesrefresh;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.jetbrains.annotations.NotNull;
 import org.openqa.selenium.*;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -53,16 +55,8 @@ public class CookiesRefresher {
     }
 
     Set<Cookie> getNewCookies() throws InterruptedException {
-        WebDriverManager.firefoxdriver().setup();
-        var firefoxOptions = new FirefoxOptions();
-
-        firefoxOptions.setBinary(browserBinaryPath);
-        if (headless) {
-            firefoxOptions.addArguments("-headless");
-        }
-        firefoxOptions.addArguments("-private", "-width=1920", "-height=1080");
-
-        var driver = new FirefoxDriver(firefoxOptions);
+        WebDriverManager.chromedriver().setup();
+        var driver = getRemoteWebDriver();
 
         driver.get("https://www.youtube.com");
 
@@ -91,6 +85,19 @@ public class CookiesRefresher {
         LOG.info("cookies retrieved: " + newCookies.stream().map(Cookie::toString).reduce("", (a, b) -> a + "\n" + b));
 
         return newCookies;
+    }
+
+    private @NotNull RemoteWebDriver getRemoteWebDriver() {
+        var chromeOptions = new ChromeOptions();
+
+        chromeOptions.setBinary(browserBinaryPath);
+        if (headless) {
+            chromeOptions.addArguments("-headless");
+        }
+        chromeOptions.addArguments("--incognito", "--disable-web-security", "--disable-dev-shm-usage", "--no-sandbox",
+                "--remote-allow-origins=*", "--allow-running-insecure-content", "--window-size=1920,1080");
+
+        return new ChromeDriver(chromeOptions);
     }
 
     String generateCookiesString(Set<Cookie> cookies) {
