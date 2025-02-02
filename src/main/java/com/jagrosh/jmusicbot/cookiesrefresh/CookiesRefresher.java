@@ -23,9 +23,8 @@ public class CookiesRefresher {
     String ytLogin;
     String ytPassword;
     String cookiesPath;
-    int timeoutMultiplier;
 
-    public CookiesRefresher(boolean headless, String browserBinaryPath, String ytLogin, String ytPassword, String cookiesPath, int timeoutMultiplier) {
+    public CookiesRefresher(boolean headless, String browserBinaryPath, String ytLogin, String ytPassword, String cookiesPath) {
         if (browserBinaryPath.isBlank()) throw new IllegalArgumentException("browserBinaryPath cannot be blank");
         if (ytLogin.isBlank()) throw new IllegalArgumentException("ytLogin cannot be blank");
         if (ytPassword.isBlank()) throw new IllegalArgumentException("ytPassword cannot be blank");
@@ -36,7 +35,6 @@ public class CookiesRefresher {
         this.ytLogin = ytLogin;
         this.ytPassword = ytPassword;
         this.cookiesPath = cookiesPath;
-        this.timeoutMultiplier = timeoutMultiplier;
     }
 
     public final static Logger LOG = LoggerFactory.getLogger(CookiesRefresher.class);
@@ -60,24 +58,24 @@ public class CookiesRefresher {
 
         driver.get("https://www.youtube.com");
 
-        new WebDriverWait(driver, Duration.ofSeconds(90 * timeoutMultiplier))
+        new WebDriverWait(driver, Duration.ofSeconds(180))
                 .until(ExpectedConditions.elementToBeClickable(By.cssSelector("a[aria-label=\"Sign in\"]"))).click();
         LOG.info("sing in btn pressed");
 
-        var loginEl = new WebDriverWait(driver, Duration.ofSeconds(90 * timeoutMultiplier))
+        var loginEl = new WebDriverWait(driver, Duration.ofSeconds(180))
                 .until(ExpectedConditions.elementToBeClickable(By.cssSelector("input[type=email]")));
         LOG.info("login field loaded");
         loginEl.sendKeys(ytLogin);
         loginEl.sendKeys(Keys.RETURN);
 
 
-        var pwEl = new WebDriverWait(driver, Duration.ofSeconds(90 * timeoutMultiplier))
+        var pwEl = new WebDriverWait(driver, Duration.ofSeconds(180))
                 .until(ExpectedConditions.elementToBeClickable(By.cssSelector("input[type=password]")));
         LOG.info("pw field loaded");
         pwEl.sendKeys(ytPassword);
         pwEl.sendKeys(Keys.RETURN);
 
-        Thread.sleep(timeoutMultiplier * 20 * 1000);
+        Thread.sleep(60 * 1000);
 
         var newCookies = driver.manage().getCookies();
 
