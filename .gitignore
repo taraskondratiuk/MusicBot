@@ -8,3 +8,4 @@ nb*.xml
 .DS_Store
 .env
 cookies.txt
+*~

@@ -32,9 +32,6 @@ RUN apt install firefox -y
 RUN mkdir "/cookies"
 RUN chmod 777 "/cookies"
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y cron
-RUN (crontab -l; echo "0 0 * * * python3 -m pip install -U yt-dlp --break-system-packages") | crontab -
-
 ENV YT_COOKIES_FILE_PATH "/cookies/cookies.txt"
 ENV FIREFOX_BINARY "/usr/bin/firefox"
 ENV DISCORD_TOKEN ""

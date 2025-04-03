@@ -19,6 +19,7 @@ import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.examples.command.*;
+import com.jagrosh.jmusicbot.audio.kolhoz.YtDlpUpdater;
 import com.jagrosh.jmusicbot.commands.admin.*;
 import com.jagrosh.jmusicbot.commands.dj.*;
 import com.jagrosh.jmusicbot.commands.general.*;
@@ -77,8 +78,10 @@ public class JMusicBot
                 Optional.of(System.getenv("YT_PASSWORD")).get(),
                 Optional.of(System.getenv("YT_COOKIES_FILE_PATH")).get()
         );
+        var u = new YtDlpUpdater();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(c::overwriteYtCookies, 0, 27, TimeUnit.HOURS);
+        scheduler.scheduleAtFixedRate(u::update, 0, 27, TimeUnit.HOURS);
         startBot();
     }
 
