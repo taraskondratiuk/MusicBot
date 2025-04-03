@@ -20,7 +20,7 @@ public class YtDlpUpdater {
             while ((line = reader.readLine()) != null) {
                 LOG.info(line);
             }
-            LOG.info("finished yt-dlp update6");
+            LOG.info("finished yt-dlp update");
         } catch (IOException e) {
             LOG.error("failed to update yt-dlp", e);
         }
