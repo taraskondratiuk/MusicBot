@@ -61,7 +61,7 @@ public class PlayerManager extends DefaultAudioPlayerManager
         registerSourceManager(new BeamAudioSourceManager());
         registerSourceManager(new GetyarnAudioSourceManager());
         registerSourceManager(new NicoAudioSourceManager());
-        registerSourceManager(new YtDlpAudioSourceManager());
+        YtDlpAudioSourceManager.init().ifPresent(this::registerSourceManager);
         registerSourceManager(new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY));
 
         AudioSourceManagers.registerLocalSource(this);

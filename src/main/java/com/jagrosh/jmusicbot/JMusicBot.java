@@ -25,7 +25,7 @@ import com.jagrosh.jmusicbot.commands.dj.*;
 import com.jagrosh.jmusicbot.commands.general.*;
 import com.jagrosh.jmusicbot.commands.music.*;
 import com.jagrosh.jmusicbot.commands.owner.*;
-import com.jagrosh.jmusicbot.cookiesrefresh.CookiesRefresher;
+import com.jagrosh.jmusicbot.audio.kolhoz.CookiesRefresher;
 import com.jagrosh.jmusicbot.entities.Prompt;
 import com.jagrosh.jmusicbot.gui.GUI;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
@@ -71,16 +71,18 @@ public class JMusicBot
                     return;
                 default:
             }
-        var c = new CookiesRefresher(
+        var c = CookiesRefresher.init(
                 true,
-                Optional.of(System.getenv("FIREFOX_BINARY")).get(),
-                Optional.of(System.getenv("YT_LOGIN")).get(),
-                Optional.of(System.getenv("YT_PASSWORD")).get(),
-                Optional.of(System.getenv("YT_COOKIES_FILE_PATH")).get()
+                Optional.ofNullable(System.getenv("FIREFOX_BINARY")),
+                Optional.ofNullable(System.getenv("YT_LOGIN")),
+                Optional.ofNullable(System.getenv("YT_PASSWORD")),
+                Optional.ofNullable(System.getenv("YT_COOKIES_FILE_PATH"))
         );
         var u = new YtDlpUpdater();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(c::overwriteYtCookies, 0, 27, TimeUnit.HOURS);
+        c.ifPresent(v ->
+                scheduler.scheduleAtFixedRate(v::overwriteYtCookies, 0, 27, TimeUnit.HOURS)
+        );
         scheduler.scheduleAtFixedRate(u::update, 0, 27, TimeUnit.HOURS);
         startBot();
     }

@@ -19,6 +19,15 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class YtDlpAudioSourceManager extends LocalAudioSourceManager {
+
+    private String tracksDir;
+    private String ytCookiesFilePath;
+
+    private YtDlpAudioSourceManager(String tracksDir, String ytCookiesFilePath) {
+        this.tracksDir = tracksDir;
+        this.ytCookiesFilePath = ytCookiesFilePath;
+    }
+
     public final static Logger LOG = LoggerFactory.getLogger(YtDlpAudioSourceManager.class);
 
     public static final String SEARCH_PREFIX = "ytsearch:";
@@ -29,12 +38,18 @@ public class YtDlpAudioSourceManager extends LocalAudioSourceManager {
     private static final String VIDEO_ID_REGEX = "(?<v>[a-zA-Z0-9_-]{11})";
     private static final String PLAYLIST_ID_REGEX = "(?<list>(PL|UU)[a-zA-Z0-9_-]+)";
 
-    private static final String TRACKS_DIR = Optional.of(System.getenv("TRACKS_DIR")).get();
-    private static final String YT_COOKIES_FILE_PATH = Optional.of(System.getenv("YT_COOKIES_FILE_PATH")).get();
-    private static final Pattern directVideoIdPattern = Pattern.compile("^" + VIDEO_ID_REGEX + "$");
-    private static final Pattern directPlaylistIdPattern = Pattern.compile("^" + PLAYLIST_ID_REGEX + "$");
     private static final Pattern mainDomainPattern = Pattern.compile("^" + PROTOCOL_REGEX + DOMAIN_REGEX + "/.*");
     private static final Pattern shortHandPattern = Pattern.compile("^" + PROTOCOL_REGEX + "(?:" + DOMAIN_REGEX + "/(?:live|embed|shorts)|" + SHORT_DOMAIN_REGEX + ")/(?<videoId>.*)");
+
+    public static Optional<YtDlpAudioSourceManager> init() {
+        var tracksDir = Optional.ofNullable(System.getenv("TRACKS_DIR")).filter(v -> !v.isBlank());
+        var ytCookiesFilePath = Optional.ofNullable(System.getenv("YT_COOKIES_FILE_PATH")).filter(v -> !v.isBlank());
+        if (tracksDir.isEmpty()) LOG.warn("TRACKS_DIR env var is not set, unable to init YtDlpAudioSourceManager");
+        if (ytCookiesFilePath.isEmpty()) LOG.warn("YT_COOKIES_FILE_PATH env var is not set, unable to init YtDlpAudioSourceManager");
+        return tracksDir
+                .flatMap(t -> ytCookiesFilePath.map(c -> Optional.of(new YtDlpAudioSourceManager(t, c))))
+                .orElse(Optional.empty());
+    }
 
     @Override
     public AudioItem loadItem(AudioPlayerManager manager, AudioReference reference) {
@@ -66,7 +81,7 @@ public class YtDlpAudioSourceManager extends LocalAudioSourceManager {
     public void cleanOldTracks() {
         if (System.currentTimeMillis() % 10 == 0) {
             var dt = LocalDateTime.now().minusDays(1).format(dateFormat);
-            Arrays.stream(new File(TRACKS_DIR).listFiles())
+            Arrays.stream(new File(tracksDir).listFiles())
                     .filter(v -> v.isDirectory())
                     .filter(v -> Pattern.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d", v.getName()))
                     .filter(v -> v.getName().compareTo(dt) < 0)
@@ -85,10 +100,10 @@ public class YtDlpAudioSourceManager extends LocalAudioSourceManager {
     public Optional<File> downloadTrack(String req) {
         cleanOldTracks();
 
-        var tmpDirPath = TRACKS_DIR + "/" + today()  + "/" + java.util.UUID.randomUUID().toString();
+        var tmpDirPath = tracksDir + "/" + today()  + "/" + java.util.UUID.randomUUID().toString();
         YtDlpRequest request = new YtDlpRequest();
         request.setOption("audio-format", "mp3");
-        request.setOption("cookies", YT_COOKIES_FILE_PATH);
+        request.setOption("cookies", ytCookiesFilePath);
         request.setOption("embed-thumbnail");
         request.setOption("no-mtime");
         request.setOption("extract-audio");

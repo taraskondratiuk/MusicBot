@@ -1,4 +1,4 @@
-package com.jagrosh.jmusicbot.cookiesrefresh;
+package com.jagrosh.jmusicbot.audio.kolhoz;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.jetbrains.annotations.NotNull;
@@ -24,17 +24,34 @@ public class CookiesRefresher {
     String ytPassword;
     String cookiesPath;
 
-    public CookiesRefresher(boolean headless, String browserBinaryPath, String ytLogin, String ytPassword, String cookiesPath) {
-        if (browserBinaryPath.isBlank()) throw new IllegalArgumentException("browserBinaryPath cannot be blank");
-        if (ytLogin.isBlank()) throw new IllegalArgumentException("ytLogin cannot be blank");
-        if (ytPassword.isBlank()) throw new IllegalArgumentException("ytPassword cannot be blank");
-        if (cookiesPath.isBlank()) throw new IllegalArgumentException("cookiesPath cannot be blank");
-
+    private CookiesRefresher(boolean headless, String browserBinaryPath, String ytLogin, String ytPassword, String cookiesPath) {
         this.headless = headless;
         this.browserBinaryPath = browserBinaryPath;
         this.ytLogin = ytLogin;
         this.ytPassword = ytPassword;
         this.cookiesPath = cookiesPath;
+    }
+
+    public static Optional<CookiesRefresher> init(boolean headless,
+                                                  Optional<String> browserBinaryPath,
+                                                  Optional<String> ytLogin,
+                                                  Optional<String> ytPassword,
+                                                  Optional<String> cookiesPath) {
+        try {
+            var path = browserBinaryPath.filter(v -> !v.isBlank())
+                    .orElseThrow(() -> new IllegalArgumentException("browserBinaryPath cannot be empty"));
+            var login = ytLogin.filter(v -> !v.isBlank())
+                    .orElseThrow(() -> new IllegalArgumentException("ytLogin cannot be empty"));
+            var pw = ytPassword.filter(v -> !v.isBlank())
+                    .orElseThrow(() -> new IllegalArgumentException("ytPassword cannot be empty"));
+            var cookiesPth = cookiesPath.filter(v -> !v.isBlank())
+                    .orElseThrow(() -> new IllegalArgumentException("cookiesPath cannot be empty"));
+            return Optional.of(new CookiesRefresher(headless, path, login, pw, cookiesPth));
+
+        } catch (Exception e) {
+            LOG.error("failed to initialize cookies refresher", e);
+            return Optional.empty();
+        }
     }
 
     public final static Logger LOG = LoggerFactory.getLogger(CookiesRefresher.class);
