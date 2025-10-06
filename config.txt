@@ -126,6 +126,7 @@ updatealerts=false
 
 lyrics.default = "A-Z Lyrics"
 
+skipratio=0
 
 // These settings allow you to configure custom aliases for all commands.
 // Multiple aliases may be given, separated by commas.
