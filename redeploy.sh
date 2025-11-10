@@ -1,0 +1,5 @@
+docker stop $CONTAINER_NAME
+docker rm $CONTAINER_NAME
+docker rmi $IMAGE_NAME
+docker build . -t $IMAGE_NAME
+docker run -d --restart=unless-stopped -e DISCORD_TOKEN=$DISCORD_TOKEN -e DISCORD_BOT_OWNER=$DISCORD_BOT_OWNER -e YT_LOGIN=$YT_LOGIN -e YT_PASSWORD=$YT_PASSWORD --name $CONTAINER_NAME $IMAGE_NAME

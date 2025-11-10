@@ -68,6 +68,25 @@ public class PlayerManager extends DefaultAudioPlayerManager
 
         DuncteBotSources.registerAll(this, "en-US");
     }
+
+    public void initNoYt()
+    {
+        TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms()).forEach(t -> registerSourceManager(t));
+
+        registerSourceManager(SoundCloudAudioSourceManager.createDefault());
+        registerSourceManager(new BandcampAudioSourceManager());
+        registerSourceManager(new VimeoAudioSourceManager());
+        registerSourceManager(new TwitchStreamAudioSourceManager());
+        registerSourceManager(new BeamAudioSourceManager());
+        registerSourceManager(new GetyarnAudioSourceManager());
+        registerSourceManager(new NicoAudioSourceManager());
+        YtDlpAudioSourceManager.init().ifPresent(this::registerSourceManager);
+        registerSourceManager(new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY));
+
+        AudioSourceManagers.registerLocalSource(this);
+
+        DuncteBotSources.registerAll(this, "en-US");
+    }
     
     public Bot getBot()
     {

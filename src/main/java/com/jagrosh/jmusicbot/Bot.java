@@ -41,6 +41,7 @@ public class Bot
     private final BotConfig config;
     private final SettingsManager settings;
     private final PlayerManager players;
+    private final PlayerManager playersNoYt;
     private final PlaylistLoader playlists;
     private final NowplayingHandler nowplaying;
     private final AloneInVoiceHandler aloneInVoiceHandler;
@@ -58,6 +59,8 @@ public class Bot
         this.threadpool = Executors.newSingleThreadScheduledExecutor();
         this.players = new PlayerManager(this);
         this.players.init();
+        this.playersNoYt = new PlayerManager(this);
+        this.playersNoYt.initNoYt();
         this.nowplaying = new NowplayingHandler(this);
         this.nowplaying.init();
         this.aloneInVoiceHandler = new AloneInVoiceHandler(this);
@@ -87,6 +90,11 @@ public class Bot
     public PlayerManager getPlayerManager()
     {
         return players;
+    }
+
+    public PlayerManager getNoYtPlayerManager()
+    {
+        return playersNoYt;
     }
     
     public PlaylistLoader getPlaylistLoader()
