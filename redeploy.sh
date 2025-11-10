@@ -1,3 +1,5 @@
+CONTAINER_NAME="java-discord-music-bot"
+IMAGE_NAME="java-discord-music-bot"
 docker stop $CONTAINER_NAME
 docker rm $CONTAINER_NAME
 docker rmi $IMAGE_NAME

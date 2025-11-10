@@ -1,6 +1,4 @@
 POM="pom.xml"
-CONTAINER_NAME="java-discord-music-bot"
-IMAGE_NAME="java-discord-music-bot"
 LATEST_VERSION=$(curl -s "https://api.github.com/repos/lavalink-devs/youtube-source/releases/latest" \
   | grep -m 1 '"tag_name":' \
   | sed -E 's/.*"([^"]+)".*/\1/')
