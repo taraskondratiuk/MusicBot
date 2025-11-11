@@ -81,9 +81,9 @@ public class JMusicBot
         var u = new YtDlpUpdater();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         c.ifPresent(v ->
-                scheduler.scheduleAtFixedRate(v::overwriteYtCookies, 0, 27, TimeUnit.HOURS)
+                scheduler.scheduleAtFixedRate(v::overwriteYtCookies, 0, 3, TimeUnit.HOURS)
         );
-        scheduler.scheduleAtFixedRate(u::update, 0, 27, TimeUnit.HOURS);
+        scheduler.scheduleAtFixedRate(u::update, 0, 3, TimeUnit.HOURS);
         startBot();
     }
 
